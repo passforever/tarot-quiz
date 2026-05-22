@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>你的心里，藏着哪句没说出口的话？</title>
+<style>
+/* — Reset & Base — */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@font-face{font-family:'quiz-serif';src:local('Noto Serif SC'),local('Source Han Serif CN'),local('STSong'),local('SimSun'),local('Georgia');font-display:swap}
+
+:root{
+  --bg1:#1a0533;--bg2:#0d1b3e;--bg3:#0a2a3c;
+  --lavender:#c4b5fd;--rose:#e8a0bf;--silver:#d1d5db;
+  --glass:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.1);
+  --glow-purple:rgba(167,139,250,.35);--glow-rose:rgba(232,160,191,.3);
+}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg1);color:#e2e0ea;
+  min-height:100dvh;overflow-x:hidden;
+  display:flex;justify-content:center;
+}
+#app{width:100%;max-width:420px;min-height:100dvh;position:relative;overflow:hidden}
+
+/* — Animated BG — */
+.bg-gradient{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  background-size:400% 400%;
+  animation:bgShift 12s ease infinite;
+}
+@keyframes bgShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* — Particles — */
+.particles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.particle{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,181,253,.7),transparent 70%);
+  animation:float linear infinite;
+  opacity:0;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:.6}
+  100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+.particle:nth-child(1){width:3px;height:3px;left:10%;animation-duration:8s;animation-delay:0s}
+.particle:nth-child(2){width:2px;height:2px;left:25%;animation-duration:12s;animation-delay:2s}
+.particle:nth-child(3){width:4px;height:4px;left:45%;animation-duration:10s;animation-delay:1s}
+.particle:nth-child(4){width:2px;height:2px;left:60%;animation-duration:14s;animation-delay:3s}
+.particle:nth-child(5){width:3px;height:3px;left:75%;animation-duration:9s;animation-delay:5s}
+.particle:nth-child(6){width:2px;height:2px;left:88%;animation-duration:11s;animation-delay:0.5s}
+.particle:nth-child(7){width:4px;height:4px;left:35%;animation-duration:13s;animation-delay:4s}
+.particle:nth-child(8){width:2px;height:2px;left:55%;animation-duration:7s;animation-delay:6s}
+.particle:nth-child(9){width:3px;height:3px;left:5%;animation-duration:15s;animation-delay:1.5s}
+.particle:nth-child(10){width:2px;height:2px;left:92%;animation-duration:10s;animation-delay:3.5s}
+.particle:nth-child(11){width:3px;height:3px;left:18%;animation-duration:11s;animation-delay:7s}
+.particle:nth-child(12){width:2px;height:2px;left:70%;animation-duration:9s;animation-delay:2.5s}
+.particle.rose{background:radial-gradient(circle,rgba(232,160,191,.6),transparent 70%)}
+
+/* — Sections — */
+.section{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem 1.5rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .6s ease,transform .6s ease;
+  transform:translateY(20px);
+}
+.section.active{opacity:1;pointer-events:auto;transform:translateY(0)}
+
+/* — Landing — */
+.landing-deco{
+  width:80px;height:80px;margin-bottom:2rem;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(196,181,253,.3),rgba(232,160,191,.15),transparent 70%);
+  box-shadow:0 0 60px rgba(167,139,250,.25),0 0 120px rgba(232,160,191,.1);
+  animation:pulse 4s ease-in-out infinite;
+  position:relative;
+}
+.landing-deco::after{
+  content:'🔮';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+
+.landing h1{
+  font-family:'quiz-serif',Georgia,serif;
+  font-size:1.65rem;line-height:1.6;
+  text-align:center;
+  background:linear-gradient(135deg,var(--lavender),var(--rose));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:.8rem;font-weight:600;
+  letter-spacing:.02em;
+}
+.landing .subtitle{
+  font-size:.85rem;color:rgba(209,213,219,.6);
+  text-align:center;margin-bottom:2.5rem;
+  letter-spacing:.08em;
+}
+.btn-start{
+  padding:.9rem 2.8rem;border:none;border-radius:50px;
+  background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(232,160,191,.3));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:var(--lavender);font-size:1rem;
+  letter-spacing:.15em;cursor:pointer;
+  box-shadow:0 0 30px var(--glow-purple),0 0 60px rgba(167,139,250,.1),inset 0 0 20px rgba(255,255,255,.05);
+  border:1px solid var(--glass-border);
+  transition:all .3s ease;
+  position:relative;overflow:hidden;
+}
+.btn-start::before{
+  content:'';position:absolute;inset:-2px;border-radius:52px;
+  background:linear-gradient(135deg,var(--lavender),var(--rose));
+  opacity:0;transition:opacity .3s;z-index:-1;
+}
+.btn-start:active{transform:scale(.96)}
+.btn-start:hover{box-shadow:0 0 40px var(--glow-purple),0 0 80px rgba(232,160,191,.15)}
+
+.landing-footer{
+  position:absolute;bottom:2rem;
+  font-size:.7rem;color:rgba(255,255,255,.2);
+  letter-spacing:.1em;
+}
+
+/* — Quiz — */
+.quiz{justify-content:flex-start;padding-top:0}
+.progress-wrap{
+  width:100%;padding:1.8rem 1.5rem 1rem;
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(180deg,rgba(26,5,51,.95) 0%,transparent 100%);
+}
+.progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:.6rem;
+}
+.progress-num{font-size:.75rem;color:rgba(196,181,253,.6);letter-spacing:.05em}
+.progress-bar{
+  width:100%;height:3px;border-radius:2px;
+  background:rgba(255,255,255,.08);overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--lavender),var(--rose));
+  box-shadow:0 0 12px var(--glow-purple);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+.question-container{
+  width:100%;flex:1;
+  display:flex;flex-direction:column;
+  padding:1rem 1.5rem 2rem;
+}
+.q-label{
+  font-size:.7rem;color:rgba(232,160,191,.5);
+  letter-spacing:.15em;margin-bottom:.6rem;
+  text-transform:uppercase;
+}
+.q-text{
+  font-family:'quiz-serif',Georgia,serif;
+  font-size:1.2rem;line-height:1.7;
+  color:#f0ecf7;margin-bottom:1.8rem;
+  font-weight:400;
+}
+.options{display:flex;flex-direction:column;gap:.7rem}
+.option{
+  padding:1rem 1.2rem;border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  cursor:pointer;transition:all .35s ease;
+  font-size:.9rem;line-height:1.6;color:#d1cde0;
+  position:relative;overflow:hidden;
+  -webkit-user-select:none;user-select:none;
+}
+.option::before{
+  content:'';position:absolute;inset:0;border-radius:14px;
+  background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(232,160,191,.1));
+  opacity:0;transition:opacity .3s;
+}
+.option:active{transform:scale(.98)}
+.option.selected{
+  border-color:rgba(196,181,253,.4);
+  background:rgba(167,139,250,.12);
+  color:#f0ecf7;
+}
+.option.selected::before{opacity:1}
+.option .opt-letter{
+  display:inline-block;width:1.4rem;
+  color:var(--lavender);opacity:.6;font-weight:500;
+}
+
+/* question transition */
+.question-container.fade-out{animation:qOut .3s ease forwards}
+.question-container.fade-in{animation:qIn .35s ease forwards}
+@keyframes qOut{to{opacity:0;transform:translateX(-30px)}}
+@keyframes qIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* — Result — */
+.result{justify-content:flex-start;padding:2rem 1.5rem;overflow-y:auto}
+.result-card{
+  width:100%;border-radius:24px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:2.5rem 1.8rem;
+  text-align:center;
+  animation:resultIn .8s ease;
+}
+@keyframes resultIn{
+  from{opacity:0;transform:scale(.9) translateY(30px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.result-emoji{font-size:3.5rem;margin-bottom:.8rem;display:block;animation:emojiFloat 3s ease-in-out infinite}
+@keyframes emojiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.result-type{
+  font-family:'quiz-serif',Georgia,serif;
+  font-size:1.5rem;font-weight:600;
+  background:linear-gradient(135deg,var(--lavender),var(--rose));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:.4rem;
+}
+.result-subtitle{
+  font-size:.85rem;color:rgba(232,160,191,.7);
+  margin-bottom:1.8rem;font-style:italic;
+  letter-spacing:.05em;
+}
+.result-desc{
+  font-family:'quiz-serif',Georgia,serif;
+  font-size:.92rem;line-height:2;color:#c8c3d6;
+  text-align:left;margin-bottom:2rem;
+}
+.result-hidden{
+  margin:1.5rem 0;padding:1.2rem;
+  border-radius:16px;
+  background:rgba(167,139,250,.08);
+  border:1px solid rgba(167,139,250,.15);
+  position:relative;
+}
+.result-hidden-label{
+  font-size:.7rem;color:rgba(196,181,253,.5);
+  letter-spacing:.12em;margin-bottom:.6rem;
+  display:block;
+}
+.result-hidden-quote{
+  font-family:'quiz-serif',Georgia,serif;
+  font-size:1.05rem;line-height:1.8;
+  color:var(--lavender);font-style:italic;
+}
+
+.result-actions{display:flex;flex-direction:column;gap:.8rem;margin-top:1.5rem}
+
+/* — Character Cards — */
+.result-chars{
+  margin:1.5rem 0 .5rem;text-align:left;
+}
+.result-chars-label{
+  font-size:.7rem;color:rgba(232,160,191,.5);
+  letter-spacing:.12em;display:block;margin-bottom:.8rem;
+}
+.char-card{
+  display:flex;gap:.8rem;align-items:flex-start;
+  padding:.9rem 1rem;border-radius:14px;
+  background:rgba(232,160,191,.06);
+  border:1px solid rgba(232,160,191,.1);
+  margin-bottom:.6rem;
+  animation:charIn .5s ease both;
+}
+.char-card:nth-child(2){animation-delay:.15s}
+.char-card:nth-child(3){animation-delay:.3s}
+@keyframes charIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.char-avatar{
+  width:36px;height:36px;min-width:36px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(232,160,191,.2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--rose);
+  border:1px solid rgba(232,160,191,.15);
+  font-family:'quiz-serif',Georgia,serif;
+}
+.char-info{flex:1;min-width:0}
+.char-name{
+  font-size:.85rem;color:#e8dff5;font-weight:500;
+  display:flex;align-items:center;gap:.4rem;
+}
+.char-from{
+  font-size:.7rem;color:rgba(196,181,253,.45);font-weight:400;
+}
+.char-why{
+  font-size:.78rem;color:rgba(200,195,214,.7);
+  line-height:1.6;margin-top:.3rem;
+  font-family:'quiz-serif',Georgia,serif;
+  font-style:italic;
+}
+.btn-share{
+  padding:.85rem;border:none;border-radius:50px;
+  background:linear-gradient(135deg,rgba(232,160,191,.25),rgba(167,139,250,.25));
+  backdrop-filter:blur(8px);
+  color:var(--rose);font-size:.85rem;
+  letter-spacing:.08em;cursor:pointer;
+  border:1px solid rgba(232,160,191,.2);
+  transition:all .3s;
+}
+.btn-share:active{transform:scale(.97)}
+.btn-retry{
+  padding:.75rem;border:none;border-radius:50px;
+  background:transparent;
+  color:rgba(209,213,219,.4);font-size:.78rem;
+  letter-spacing:.08em;cursor:pointer;
+  transition:color .3s;
+}
+.btn-retry:active{color:rgba(209,213,219,.7)}
+
+/* — Watermark — */
+.watermark{
+  position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+  font-size:.6rem;color:rgba(255,255,255,.1);
+  letter-spacing:.1em;z-index:100;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bg-gradient"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Landing -->
+  <div class="section landing active" id="sec-landing">
+    <div class="landing-deco"></div>
+    <h1>你的心里，<br>藏着哪句没说出口的话？</h1>
+    <p class="subtitle">12道题 · 揭开你从不展示的真实内心</p>
+    <button class="btn-start" onclick="startQuiz()">开始测试</button>
+    <div class="landing-footer">— 仅供娱乐 · 愿你被世界温柔以待 —</div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="section quiz" id="sec-quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-num" id="prog-text">1 / 12</span>
+        <span class="progress-num" id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="question-container" id="q-container">
+      <div class="q-label" id="q-label">Question 01</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="section result" id="sec-result">
+    <div class="result-card">
+      <span class="result-emoji" id="r-emoji"></span>
+      <div class="result-type" id="r-type"></div>
+      <div class="result-subtitle" id="r-subtitle"></div>
+      <div class="result-desc" id="r-desc"></div>
+      <div class="result-chars" id="r-chars">
+        <span class="result-chars-label">与你相似的灵魂</span>
+      </div>
+      <div class="result-hidden">
+        <span class="result-hidden-label">你藏得最深的一句话是</span>
+        <div class="result-hidden-quote" id="r-quote"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-share" onclick="shareResult()">分享给那个你想让TA看懂你的人</button>
+        <button class="btn-retry" onclick="retry()">重新测试</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="watermark">心理趣测 · 仅供参考</div>
+
+<script>
+// — Particles —
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div');
+    p.className='particle'+(i%3===0?' rose':'');
+    c.appendChild(p);
+  }
+})();
+
+// — Data —
+const questions=[
+  {q:'深夜独处时，你最常做的事是？',opts:['翻看聊天记录，想着该不该发那条消息','刷手机到困，不让自己有空想事情','复盘白天说过的每句话','听歌，假装歌词里的故事是别人的']},
+  {q:'朋友突然说"你最近是不是不开心"，你会？',opts:['"没有啊哈哈，你想多了"','"还好吧，就是有点累"','沉默几秒然后转移话题','反问"你怎么突然这么说"']},
+  {q:'有人当众让你不舒服时，你通常会？',opts:['笑着打圆场，回家才开始生气','当时就怼回去，然后后悔自己太冲','不说话，但心里已经记住了','表面没反应，但之后会慢慢疏远这个人']},
+  {q:'你最怕别人用哪个词形容你？',opts:['"你真的很坚强"','"你好像什么都不在乎"','"你脾气真好"','"你总是很开心的样子"']},
+  {q:'发了一条朋友圈又删掉，最可能的原因是？',opts:['觉得暴露了太多真实情绪','怕特定的人看到会多想','点赞太少，感觉没人在意','突然觉得矫情了']},
+  {q:'你对"算了"这两个字的理解是？',opts:['不是真的算了，是攒够了就走','是对自己说的，别期待了','是累了，不想解释了','是给对方最后的体面']},
+  {q:'当你真正难过的时候，你会？',opts:['谁都不说，自己消化','发个搞笑的表情包掩饰','找一个不太熟的人倾诉','写下来，但不会给任何人看']},
+  {q:'有人说"有事随时找我"，你的第一反应是？',opts:['感动但不会真的去找','心想"说说而已"','记住了，但永远不会用这张牌','想找，但怕打扰别人']},
+  {q:'你最不愿意被人看到的状态是？',opts:['崩溃大哭的样子','独自一人无所事事的样子','努力讨好别人的样子','嫉妒别人的样子']},
+  {q:'下面哪句话最能让你破防？',opts:['"你也可以不用那么懂事"','"我知道你其实很在意"','"你不用笑了，我看得出来"','"你撑了很久了吧"']},
+  {q:'你觉得自己最大的矛盾是？',opts:['渴望被理解，又害怕被看透','想要亲密关系，又不敢全身心投入','明明很在意，却表现得最无所谓','想做自己，又怕不被接受']},
+  {q:'如果可以匿名说一句真心话，你最想说的是？',opts:['"其实我没有你们想的那么强"','"我好累，但不知道可以跟谁说"','"很多时候我的笑是演出来的"','"我真的好怕被忘记"']}
+];
+
+// scoring: each question -> [A_type, B_type, C_type, D_type]
+const scoreMap=[
+  [5,4,3,2],[2,4,3,1],[1,4,3,3],[1,4,3,2],
+  [5,6,6,1],[3,5,4,1],[1,2,6,5],[1,4,3,5],
+  [1,6,5,4],[5,4,2,1],[6,5,4,2],[1,5,2,6]
+];
+
+const results={
+  1:{emoji:'🌙',type:'铠甲型人格',sub:'"表面刀枪不入，其实满身伤痕"',desc:'你习惯了做那个"没关系"的人。所有人都觉得你很强，但没人知道你在深夜也会偷偷红了眼眶。你不是不会痛，是怕痛了之后没人接住你。你最需要听到的话不是"加油"，而是"你也可以休息了"。',quote:'"帮我一次好不好，这次换我靠着你"',chars:[{name:'德善',from:'《请回答1988》',why:'永远懂事的老二，笑着说"没关系"，却在无人的角落偷偷哭泣'},{name:'赫敏',from:'《哈利·波特》',why:'所有人都依赖她的坚强，却没人问过她累不累'}]},
+  2:{emoji:'🎭',type:'微笑面具型',sub:'"笑得最大声的人，往往哭得最安静"',desc:'你总是人群里最活跃的那个，但散场后的沉默只有你自己知道。你用快乐武装自己，因为你知道，一旦不笑了，就会有人问"你怎么了"，而你不知道怎么回答。你不是真的乐观，你只是不想让人担心。',quote:'"我笑并不代表我没事"',chars:[{name:'漩涡鸣人',from:'《火影忍者》',why:'用最灿烂的笑容藏住最深的孤独，怕一旦不笑就没人愿意靠近'},{name:'尹英德',from:'《我的大叔》',why:'对所有人温柔微笑，把所有的苦都一个人默默扛下'}]},
+  3:{emoji:'🌊',type:'沉默火山型',sub:'"表面风平浪静，内心惊涛骇浪"',desc:'你不是脾气好，你只是把所有的愤怒都吞进了肚子里。你习惯了忍，习惯了算了，习惯了"别人可能不是故意的"。但你心里有一本账，记得每一次不公平。你不是没有底线，你的底线叫"最后一次"。',quote:'"我不是不生气，是生气给谁看呢"',chars:[{name:'梅长苏',from:'《琅琊榜》',why:'十二年隐忍不发，把所有愤怒化作步步为营的棋局'},{name:'沈眉庄',from:'《甄嬛传》',why:'从不轻易发怒，但一旦寒了心，转身就是永远'}]},
+  4:{emoji:'🦔',type:'假装不在乎型',sub:'"嘴上说随便，心里全是答案"',desc:'"都行""随便""无所谓"是你的口头禅，但每一个"无所谓"背后都藏着一个确切的答案。你不是真的不在乎，你是怕在乎了得不到回应。你宁愿假装冷漠，也不愿意暴露期待落空的失落。',quote:'"我说的每个随便，都有最想要的答案"',chars:[{name:'达西先生',from:'《傲慢与偏见》',why:'用冷漠伪装深情，明明在意到骨子里却说不出口'},{name:'凌霄',from:'《以家人之名》',why:'嘴上说着"无所谓"，却偷偷把所有在乎都藏进了行动里'}]},
+  5:{emoji:'🌑',type:'自我消耗型',sub:'"对别人最宽容，对自己最苛刻"',desc:'你可以原谅所有人，唯独不放过自己。别人的错你一笑而过，自己的错却反复咀嚼。你活得很累，因为你总在替别人着想，却忘了自己也是需要被心疼的人。你该听到的是："你已经做得够好了。"',quote:'"谁来心疼一下我呢"',chars:[{name:'松子',from:'《被嫌弃的松子的一生》',why:'一生都在为别人而活，拼命讨好所有人，唯独忘了爱自己'},{name:'小王子',from:'《小王子》',why:'用全部的温柔照顾玫瑰，独自面对日落时的四十四次忧伤'}]},
+  6:{emoji:'🔮',type:'孤岛型人格',sub:'"人群中最合群，内心最孤独"',desc:'你可以和任何人聊得来，但真正懂你的人一个都没有。你有很多朋友，但没有一个可以打电话说"我不开心"的人。你害怕的不是独处，而是在人群中依然感到孤独。你最渴望的，不过是一个不用解释就能被理解的人。',quote:'"热闹是你们的，我什么都没有"',chars:[{name:'1900',from:'《海上钢琴师》',why:'用音乐与所有人对话，却始终无法走进任何人的世界'},{name:'渡边',from:'《挪威的森林》',why:'游走在人群之间，内心却像一座永远无法靠岸的孤岛'}]}
+};
+
+let cur=0, answers=[];
+const letters=['A','B','C','D'];
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQ(idx,dir){
+  const qc=document.getElementById('q-container');
+  qc.className='question-container fade-out';
+  setTimeout(()=>{
+    document.getElementById('q-label').textContent=`Question ${String(idx+1).padStart(2,'0')}`;
+    document.getElementById('q-text').textContent=questions[idx].q;
+    const opts=document.getElementById('q-options');
+    opts.innerHTML='';
+    questions[idx].opts.forEach((o,i)=>{
+      const d=document.createElement('div');
+      d.className='option';
+      d.innerHTML=`<span class="opt-letter">${letters[i]}.</span> ${o}`;
+      d.onclick=()=>selectOpt(i,d);
+      opts.appendChild(d);
+    });
+    const pct=Math.round((idx/12)*100);
+    document.getElementById('prog-text').textContent=`${idx+1} / 12`;
+    document.getElementById('prog-pct').textContent=`${pct}%`;
+    document.getElementById('prog-fill').style.width=pct+'%';
+    qc.className='question-container fade-in';
+  },280);
+}
+
+function selectOpt(i,el){
+  document.querySelectorAll('.option').forEach(o=>{o.classList.remove('selected');o.style.pointerEvents='none'});
+  el.classList.add('selected');
+  answers[cur]=i;
+  setTimeout(()=>{
+    cur++;
+    if(cur>=12){showResult();}
+    else{renderQ(cur,1);}
+  },500);
+}
+
+function showResult(){
+  const scores={1:0,2:0,3:0,4:0,5:0,6:0};
+  answers.forEach((a,qi)=>{scores[scoreMap[qi][a]]++});
+  let maxT=1,maxS=0;
+  for(let t=1;t<=6;t++){if(scores[t]>maxS){maxS=scores[t];maxT=t;}}
+  const r=results[maxT];
+  document.getElementById('r-emoji').textContent=r.emoji;
+  document.getElementById('r-type').textContent=r.type;
+  document.getElementById('r-subtitle').textContent=r.sub;
+  document.getElementById('r-desc').textContent=r.desc;
+  document.getElementById('r-quote').textContent=r.quote;
+  // render character cards
+  const charsEl=document.getElementById('r-chars');
+  charsEl.innerHTML='<span class="result-chars-label">与你相似的灵魂</span>';
+  r.chars.forEach(c=>{
+    const card=document.createElement('div');
+    card.className='char-card';
+    card.innerHTML=`<div class="char-avatar">${c.name[0]}</div><div class="char-info"><div class="char-name">${c.name} <span class="char-from">${c.from}</span></div><div class="char-why">${c.why}</div></div>`;
+    charsEl.appendChild(card);
+  });
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-pct').textContent='100%';
+  showSection('sec-result');
+}
+
+function startQuiz(){
+  cur=0;answers=[];
+  showSection('sec-quiz');
+  renderQ(0);
+}
+
+function retry(){
+  cur=0;answers=[];
+  showSection('sec-landing');
+}
+
+function shareResult(){
+  const t=document.getElementById('r-type').textContent;
+  const s=document.getElementById('r-subtitle').textContent;
+  const q=document.getElementById('r-quote').textContent;
+  const text=`我测出来是「${t}」${s}\n我藏得最深的一句话是：${q}\n\n你也来测测你在隐藏什么？`;
+  if(navigator.share){
+    navigator.share({title:'你的心里藏着哪句没说出口的话？',text}).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.querySelector('.btn-share');
+      const orig=btn.textContent;
+      btn.textContent='已复制到剪贴板 ✓';
+      setTimeout(()=>btn.textContent=orig,2000);
+    });
+  }
+}
+</script>
+</body>
+</html>

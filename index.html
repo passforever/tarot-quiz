@@ -8,620 +8,558 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --cream:#faf6f0;--parchment:#f5ede0;--ink:#3a322a;--ink-light:#6b5e52;
-  --gold:#c9a96e;--gold-light:#e8d5a8;--rose-ink:#9e6b7b;--sage:#7a8c6e;
-  --tarot-border:#d4c4a8;--shadow:rgba(107,94,82,.1);
+  --deep:#1a1520;
+  --midnight:#2a1f35;
+  --plum:#3d2a4a;
+  --cream:#faf6f0;
+  --parchment:#f5ede0;
+  --ink:#3a322a;
+  --ink-light:#6b5e52;
+  --gold:#c9a96e;
+  --gold-light:#e8d5a8;
+  --gold-bright:#dfbc6e;
+  --rose:#c47a8a;
+  --rose-deep:#9e6b7b;
+  --sage:#7a8c6e;
+  --mauve:#b8a0c4;
+  --shadow-gold:rgba(201,169,110,.2);
 }
-html{font-size:16px;-webkit-tap-highlight-color:transparent}
+
+html{font-size:16px;-webkit-tap-highlight-color:transparent;height:100%}
 body{
   font-family:'Noto Serif SC','ZCOOL XiaoWei',Georgia,serif;
-  background:var(--cream);color:var(--ink);
+  background:var(--deep);
+  color:var(--cream);
   min-height:100dvh;overflow-x:hidden;
-  display:flex;justify-content:center;
-}
-#app{width:100%;max-width:420px;min-height:100dvh;position:relative}
-
-/* — Paper texture overlay — */
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse at 20% 50%,rgba(201,169,110,.06) 0%,transparent 50%),
-    radial-gradient(ellipse at 80% 20%,rgba(158,107,123,.05) 0%,transparent 40%),
-    radial-gradient(ellipse at 50% 80%,rgba(122,140,110,.04) 0%,transparent 45%);
-}
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
-}
-
-/* — Sections — */
-.section{
-  position:absolute;inset:0;z-index:2;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:2rem 1.5rem;
-  opacity:0;pointer-events:none;
-  transition:opacity .7s ease,transform .7s ease;
-  transform:translateY(15px);
-}
-.section.active{opacity:1;pointer-events:auto;transform:translateY(0)}
-
-/* — Tarot decorative borders — */
-.tarot-frame{
-  position:relative;padding:2.5rem 1.8rem;
-  border:1.5px solid var(--tarot-border);
-  border-radius:16px;
-  background:rgba(255,255,255,.6);
-  backdrop-filter:blur(4px);
-  box-shadow:0 2px 20px var(--shadow);
-}
-.tarot-frame::before,.tarot-frame::after{
-  content:'';position:absolute;border:1px solid rgba(201,169,110,.3);border-radius:12px;
-}
-.tarot-frame::before{inset:6px}
-.tarot-frame::after{inset:12px;border-style:dashed;border-color:rgba(201,169,110,.15)}
-
-/* corner ornaments via SVG data URI */
-.corner-ornament{
-  position:absolute;width:28px;height:28px;opacity:.4;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M5 20Q5 5 20 5' stroke='%23c9a96e' fill='none' stroke-width='1.5'/%3E%3Ccircle cx='20' cy='5' r='2' fill='%23c9a96e'/%3E%3Ccircle cx='5' cy='20' r='2' fill='%23c9a96e'/%3E%3Cpath d='M12 12L8 8' stroke='%23c9a96e' fill='none' stroke-width='1'/%3E%3C/svg%3E") no-repeat center/contain;
-}
-.corner-ornament.tl{top:14px;left:14px}
-.corner-ornament.tr{top:14px;right:14px;transform:scaleX(-1)}
-.corner-ornament.bl{bottom:14px;left:14px;transform:scaleY(-1)}
-.corner-ornament.br{bottom:14px;right:14px;transform:scale(-1)}
-
-/* — Landing — */
-.landing-tarot-icon{
-  width:60px;height:80px;margin-bottom:1.5rem;
-  border:1.5px solid var(--gold);border-radius:8px;
-  background:linear-gradient(135deg,var(--parchment),rgba(255,255,255,.8));
   display:flex;align-items:center;justify-content:center;
-  font-size:2rem;
-  box-shadow:0 4px 15px rgba(201,169,110,.15);
-  animation:cardFloat 4s ease-in-out infinite;
   position:relative;
 }
-.landing-tarot-icon::before{
-  content:'';position:absolute;inset:3px;border:1px solid rgba(201,169,110,.25);border-radius:6px;
-}
-@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
 
-.landing h1{
+/* ——— Animated Starfield Background ——— */
+.stars-canvas{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+}
+
+/* ——— Ambient Glow Orbs ——— */
+.ambient-orb{
+  position:fixed;border-radius:50%;z-index:0;pointer-events:none;
+  filter:blur(80px);opacity:.25;
+}
+.orb-1{
+  width:320px;height:320px;
+  background:radial-gradient(circle,rgba(201,169,110,.5),transparent);
+  top:10%;left:-80px;
+  animation: orbPulse1 8s ease-in-out infinite;
+}
+.orb-2{
+  width:240px;height:240px;
+  background:radial-gradient(circle,rgba(196,122,138,.4),transparent);
+  bottom:15%;right:-60px;
+  animation: orbPulse2 10s ease-in-out infinite;
+}
+.orb-3{
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(184,160,196,.3),transparent);
+  top:50%;left:50%;
+  animation: orbPulse3 12s ease-in-out infinite;
+}
+@keyframes orbPulse1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.15)}}
+@keyframes orbPulse2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-25px,15px) scale(1.1)}}
+@keyframes orbPulse3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
+
+/* ——— Main Container ——— */
+#app{
+  width:100%;max-width:420px;min-height:100dvh;
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;
+  padding:2.5rem 1.8rem;
+}
+
+/* ——— Tarot Card Floating ——— */
+.hero-card-wrap{
+  position:relative;margin-bottom:2rem;
+}
+.hero-card{
+  width:90px;height:128px;position:relative;z-index:1;
+  border-radius:10px;
+  background:linear-gradient(145deg,rgba(26,21,32,.9),rgba(42,31,53,.8));
+  border:1.5px solid rgba(201,169,110,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.6rem;
+  box-shadow:
+    0 4px 30px rgba(201,169,110,.12),
+    0 1px 3px rgba(0,0,0,.3);
+  animation: heroFloat 5s ease-in-out infinite;
+}
+.hero-card::before{
+  content:'';position:absolute;inset:4px;border-radius:7px;
+  border:1px solid rgba(201,169,110,.2);
+}
+.hero-card::after{
+  content:'';position:absolute;inset:8px;border-radius:5px;
+  border:.5px solid rgba(201,169,110,.1);
+  border-style:dashed;
+}
+.hero-card-glow{
+  position:absolute;inset:-15px;z-index:0;
+  background:radial-gradient(ellipse at center,rgba(201,169,110,.18),transparent 70%);
+  border-radius:50%;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes heroFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+@keyframes glowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+
+/* ——— Star sparkles around card ——— */
+.sparkle{
+  position:absolute;width:3px;height:3px;
+  background:var(--gold-bright);border-radius:50%;
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+  box-shadow:0 0 6px rgba(223,188,110,.6);
+}
+.sparkle:nth-child(1){top:10%;left:-12px;animation-delay:0s}
+.sparkle:nth-child(2){top:25%;right:-10px;animation-delay:.4s}
+.sparkle:nth-child(3){bottom:20%;left:-8px;animation-delay:.8s}
+.sparkle:nth-child(4){bottom:10%;right:-14px;animation-delay:1.2s}
+.sparkle:nth-child(5){top:45%;left:-16px;animation-delay:1.6s}
+.sparkle:nth-child(6){top:55%;right:-16px;animation-delay:.2s}
+@keyframes sparkleTwinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:1;transform:scale(1.8)}}
+
+/* ——— Typography ——— */
+.hero-eyebrow{
+  font-family:'Playfair Display',serif;
+  font-size:.65rem;letter-spacing:.3em;
+  color:rgba(201,169,110,.7);
+  text-transform:uppercase;font-style:italic;
+  margin-bottom:1rem;text-align:center;
+}
+.hero-title{
   font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
-  font-size:1.55rem;line-height:1.7;
-  text-align:center;color:var(--ink);
-  margin-bottom:.5rem;font-weight:400;
+  font-size:1.7rem;line-height:1.65;text-align:center;
+  font-weight:400;margin-bottom:.4rem;
+  color:var(--cream);
+  letter-spacing:.04em;
 }
-.landing h1 em{
-  font-style:normal;color:var(--gold);
-  text-decoration:underline;text-decoration-color:rgba(201,169,110,.3);
-  text-underline-offset:4px;text-decoration-style:wavy;
+.hero-title em{
+  font-style:normal;color:var(--gold-bright);
+  position:relative;
 }
-.landing .subtitle{
-  font-family:'Playfair Display',serif;
-  font-size:.75rem;color:var(--ink-light);
-  text-align:center;margin-bottom:.3rem;
-  letter-spacing:.2em;font-style:italic;
+.hero-title em::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(223,188,110,.5),transparent);
 }
-.landing .subtitle-cn{
-  font-size:.8rem;color:var(--ink-light);opacity:.7;
-  text-align:center;margin-bottom:2rem;
-  letter-spacing:.1em;
-}
-.landing .divider{
-  width:120px;height:1px;margin:1rem auto;
-  background:linear-gradient(90deg,transparent,var(--gold-light),transparent);
-}
-.btn-start{
-  padding:.85rem 2.5rem;border:1.5px solid var(--gold);border-radius:50px;
-  background:transparent;color:var(--ink);
-  font-family:'Noto Serif SC',serif;font-size:.95rem;
-  letter-spacing:.15em;cursor:pointer;
-  transition:all .4s ease;position:relative;
-  overflow:hidden;
-}
-.btn-start::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(201,169,110,.1),rgba(232,213,168,.15));
-  opacity:0;transition:opacity .4s;
-}
-.btn-start:hover::before,.btn-start:active::before{opacity:1}
-.btn-start:active{transform:scale(.97)}
-.landing-footer{
-  position:absolute;bottom:1.5rem;
-  font-size:.65rem;color:rgba(107,94,82,.3);
-  letter-spacing:.08em;font-style:italic;
-}
-
-/* — Quiz — */
-.quiz{justify-content:flex-start;padding-top:0}
-.quiz-header{
-  width:100%;padding:1.5rem 1.5rem .8rem;
-  position:sticky;top:0;z-index:10;
-  background:linear-gradient(180deg,var(--cream) 70%,transparent);
-}
-.progress-row{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:.5rem;
-}
-.progress-label{
-  font-family:'Playfair Display',serif;
-  font-size:.7rem;color:var(--ink-light);letter-spacing:.1em;font-style:italic;
-}
-.progress-track{
-  width:100%;height:2px;background:rgba(212,196,168,.3);border-radius:1px;overflow:hidden;
-}
-.progress-fill{
-  height:100%;background:linear-gradient(90deg,var(--gold),var(--rose-ink));
-  border-radius:1px;transition:width .5s cubic-bezier(.4,0,.2,1);
-}
-
-.q-card{
-  width:100%;padding:0 1.5rem 2rem;flex:1;
-  display:flex;flex-direction:column;
-}
-.q-number{
-  font-family:'Playfair Display',serif;
-  font-size:2.2rem;color:rgba(201,169,110,.25);
-  font-weight:700;line-height:1;margin-bottom:.3rem;
+.hero-sub{
+  font-size:.82rem;color:rgba(196,122,138,.8);
+  text-align:center;margin-bottom:1.8rem;
+  letter-spacing:.08em;line-height:1.6;
   font-style:italic;
 }
-.q-text{
-  font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
-  font-size:1.15rem;line-height:1.8;color:var(--ink);
-  margin-bottom:1.5rem;font-weight:400;
-}
-.q-options{display:flex;flex-direction:column;gap:.6rem}
-.q-opt{
-  padding:.9rem 1.1rem;border-radius:12px;
-  border:1px solid rgba(212,196,168,.4);
-  background:rgba(255,255,255,.5);
-  cursor:pointer;transition:all .35s ease;
-  font-size:.88rem;line-height:1.6;color:var(--ink-light);
-  position:relative;
-  -webkit-user-select:none;user-select:none;
-}
-.q-opt::before{
-  content:'';position:absolute;left:.9rem;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;border-radius:50%;
-  border:1.5px solid var(--tarot-border);
-  transition:all .3s;
-}
-.q-opt{padding-left:2.8rem}
-.q-opt:active{transform:scale(.98)}
-.q-opt.selected{
-  border-color:var(--gold);
-  background:rgba(201,169,110,.08);color:var(--ink);
-}
-.q-opt.selected::before{
-  background:var(--gold);border-color:var(--gold);
-  box-shadow:inset 0 0 0 2px white;
-}
-.q-card.fade-out{animation:qFadeOut .3s ease forwards}
-.q-card.fade-in{animation:qFadeIn .35s ease forwards}
-@keyframes qFadeOut{to{opacity:0;transform:translateX(-25px)}}
-@keyframes qFadeIn{from{opacity:0;transform:translateX(25px)}to{opacity:1;transform:translateX(0)}}
 
-/* — Result — */
-.result{justify-content:flex-start;padding:1.5rem;overflow-y:auto}
-.result-card{
-  width:100%;border:1.5px solid var(--tarot-border);border-radius:20px;
-  background:rgba(255,255,255,.7);
-  padding:2rem 1.5rem;text-align:center;
-  box-shadow:0 4px 30px var(--shadow);
-  animation:resultReveal .8s ease;
+/* ——— Divider ——— */
+.divider{
+  width:100px;height:1px;margin:0 auto 2rem;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,.4),transparent);
   position:relative;
 }
-.result-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(201,169,110,.2);border-radius:16px;pointer-events:none}
-@keyframes resultReveal{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-
-.result-arcana{
-  font-family:'Playfair Display',serif;
-  font-size:.7rem;letter-spacing:.25em;
-  color:var(--gold);margin-bottom:.8rem;
-  text-transform:uppercase;font-style:italic;
+.divider::after{
+  content:'◆';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:.35rem;color:rgba(201,169,110,.5);
+  background:var(--deep);padding:0 8px;
 }
-.result-type{
-  font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
-  font-size:1.45rem;color:var(--ink);
+
+/* ——— Three Feature Cards ——— */
+.features{
+  width:100%;display:flex;flex-direction:column;gap:.8rem;
+  margin-bottom:2rem;
+}
+.feat-card{
+  display:flex;align-items:flex-start;gap:.9rem;
+  padding:1rem 1.1rem;
+  border-radius:14px;
+  border:1px solid rgba(201,169,110,.12);
+  background:linear-gradient(135deg,rgba(42,31,53,.5),rgba(26,21,32,.4));
+  backdrop-filter:blur(6px);
+  transition:all .4s ease;
+  position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,169,110,.04),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.feat-card:hover::before,.feat-card:active::before{opacity:1}
+.feat-icon{
+  width:42px;height:42px;min-width:42px;
+  border-radius:50%;
+  border:1px solid rgba(201,169,110,.2);
+  background:rgba(26,21,32,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+  position:relative;
+}
+.feat-icon::after{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  border:.5px solid rgba(201,169,110,.1);
+  animation: iconRing 4s ease-in-out infinite;
+}
+.feat-card:nth-child(2) .feat-icon::after{animation-delay:.8s}
+.feat-card:nth-child(3) .feat-icon::after{animation-delay:1.6s}
+@keyframes iconRing{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.15);opacity:.7}}
+
+.feat-body{flex:1}
+.feat-label{
+  font-size:.68rem;color:rgba(201,169,110,.7);
+  letter-spacing:.12em;margin-bottom:.2rem;
+  font-family:'Playfair Display',serif;font-style:italic;
+}
+.feat-title{
+  font-size:.88rem;color:var(--cream);
   margin-bottom:.3rem;font-weight:400;
-}
-.result-subtitle{
-  font-size:.82rem;color:var(--rose-ink);
-  margin-bottom:1.5rem;font-style:italic;
   letter-spacing:.03em;
 }
-.result-painting-wrap{
-  width:100%;margin:0 auto 1.2rem;
-  border:1px solid var(--tarot-border);
-  border-radius:8px;overflow:hidden;
-  box-shadow:0 3px 15px rgba(107,94,82,.12);
-  position:relative;
-  background:var(--parchment);
+.feat-desc{
+  font-size:.73rem;color:rgba(196,122,138,.6);
+  line-height:1.6;font-style:italic;
 }
-.result-painting{
-  width:100%;display:block;
-  min-height:180px;
-  object-fit:cover;
+
+/* ——— Verification Section ——— */
+.access-section{
+  width:100%;text-align:center;
+  margin-top:.5rem;
 }
-.result-painting-info{
-  padding:.6rem .8rem;
-  background:rgba(250,246,240,.9);
-  border-top:1px solid rgba(212,196,168,.3);
-  display:flex;justify-content:space-between;align-items:center;
-}
-.painting-title{
-  font-family:'Playfair Display',serif;
-  font-size:.72rem;color:var(--ink-light);font-style:italic;
-}
-.painting-artist{font-size:.68rem;color:var(--gold)}
-.result-painting-reason{
-  font-size:.78rem;color:var(--ink-light);
-  line-height:1.7;text-align:left;
-  margin-bottom:1.5rem;font-style:italic;
-  padding:0 .2rem;
-}
-.result-divider{
-  width:80px;height:1px;margin:1.2rem auto;
-  background:linear-gradient(90deg,transparent,var(--gold-light),transparent);
-}
-.result-desc{
-  font-size:.88rem;line-height:2;color:var(--ink-light);
-  text-align:left;margin-bottom:1rem;
-}
-.result-hidden{
-  margin:1.2rem 0;padding:1rem;border-radius:12px;
-  border:1px dashed rgba(201,169,110,.3);
-  background:rgba(245,237,224,.4);
-  text-align:center;
-}
-.result-hidden-label{
-  font-size:.65rem;color:var(--gold);
-  letter-spacing:.15em;margin-bottom:.5rem;display:block;
+.access-label{
+  font-size:.68rem;color:rgba(184,160,196,.7);
+  letter-spacing:.15em;margin-bottom:.8rem;
   font-family:'Playfair Display',serif;font-style:italic;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
 }
-.result-hidden-quote{
-  font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
-  font-size:1rem;line-height:1.8;color:var(--ink);
+.access-label::before,.access-label::after{
+  content:'';width:30px;height:.5px;
+  background:linear-gradient(90deg,transparent,rgba(184,160,196,.4));
 }
-.result-chars{text-align:left;margin:1rem 0}
-.result-chars-label{
-  font-size:.65rem;color:var(--gold);
-  letter-spacing:.12em;margin-bottom:.6rem;display:block;
-  font-family:'Playfair Display',serif;font-style:italic;
+.access-label::after{
+  background:linear-gradient(90deg,rgba(184,160,196,.4),transparent);
 }
-.char-card{
-  display:flex;gap:.7rem;align-items:flex-start;
-  padding:.7rem .8rem;border-radius:10px;
-  border:1px solid rgba(212,196,168,.25);
-  background:rgba(255,255,255,.4);
-  margin-bottom:.5rem;
-  animation:charSlide .5s ease both;
+
+.code-input-wrap{
+  display:flex;gap:.5rem;justify-content:center;margin-bottom:.7rem;
 }
-.char-card:nth-child(3){animation-delay:.15s}
-.char-card:nth-child(4){animation-delay:.3s}
-@keyframes charSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.char-avatar{
-  width:32px;height:32px;min-width:32px;border-radius:50%;
-  border:1px solid var(--tarot-border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.75rem;color:var(--gold);
-  background:rgba(245,237,224,.5);
+.code-input{
+  padding:.8rem 1.2rem;border-radius:50px;
+  border:1.5px solid rgba(201,169,110,.25);
+  background:rgba(26,21,32,.7);
+  color:var(--cream);font-size:.9rem;
   font-family:'Noto Serif SC',serif;
+  text-align:center;letter-spacing:.15em;
+  width:180px;outline:none;
+  transition:all .3s ease;
+  backdrop-filter:blur(4px);
+  text-transform:uppercase;
 }
-.char-info{flex:1}
-.char-name{font-size:.8rem;color:var(--ink)}
-.char-from{font-size:.68rem;color:var(--ink-light);opacity:.6;margin-left:.3rem}
-.char-why{font-size:.73rem;color:var(--ink-light);line-height:1.6;margin-top:.2rem;font-style:italic}
+.code-input::placeholder{
+  color:rgba(184,160,196,.35);
+  letter-spacing:.1em;font-size:.75rem;
+  text-transform:none;
+}
+.code-input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 20px rgba(201,169,110,.15);
+  background:rgba(42,31,53,.7);
+}
+.code-input.error{
+  border-color:rgba(196,122,138,.6);
+  animation: shake .5s ease;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-8px)}
+  30%{transform:translateX(8px)}
+  45%{transform:translateX(-6px)}
+  60%{transform:translateX(6px)}
+  75%{transform:translateX(-3px)}
+  90%{transform:translateX(3px)}
+}
 
-.result-actions{display:flex;flex-direction:column;gap:.7rem;margin-top:1.2rem}
-.btn-share{
-  padding:.8rem;border:1.5px solid var(--rose-ink);border-radius:50px;
-  background:transparent;color:var(--rose-ink);
-  font-family:'Noto Serif SC',serif;font-size:.82rem;
-  letter-spacing:.06em;cursor:pointer;transition:all .3s;
+.btn-unlock{
+  padding:.8rem 1.8rem;border-radius:50px;
+  border:1.5px solid var(--gold);
+  background:linear-gradient(135deg,rgba(201,169,110,.15),rgba(201,169,110,.05));
+  color:var(--gold-bright);font-size:.88rem;
+  font-family:'Noto Serif SC',serif;letter-spacing:.1em;
+  cursor:pointer;transition:all .4s ease;
+  white-space:nowrap;
 }
-.btn-share:active{transform:scale(.97);background:rgba(158,107,123,.05)}
-.btn-retry{
-  padding:.7rem;border:none;background:transparent;
-  color:var(--ink-light);font-size:.75rem;opacity:.5;
-  font-family:'Noto Serif SC',serif;cursor:pointer;
-  letter-spacing:.06em;
+.btn-unlock:hover,.btn-unlock:active{
+  background:linear-gradient(135deg,rgba(201,169,110,.25),rgba(201,169,110,.1));
+  box-shadow:0 0 25px rgba(201,169,110,.2);
+  transform:translateY(-1px);
 }
-.btn-retry:active{opacity:.8}
-.watermark{
-  position:fixed;bottom:.8rem;left:50%;transform:translateX(-50%);
-  font-size:.55rem;color:rgba(107,94,82,.15);
-  letter-spacing:.08em;z-index:100;pointer-events:none;
-  font-family:'Playfair Display',serif;font-style:italic;
+.btn-unlock:active{transform:scale(.97)}
+
+.code-hint{
+  font-size:.62rem;color:rgba(184,160,196,.4);
+  margin-top:.6rem;letter-spacing:.06em;
+  font-style:italic;
 }
 
-/* — Floating botanical sketches — */
-.deco-botanical{position:fixed;pointer-events:none;z-index:1;opacity:.06}
-.deco-botanical svg{width:100%;height:100%}
-.deco-b1{top:5%;right:-20px;width:100px;height:150px;animation:sway 8s ease-in-out infinite}
-.deco-b2{bottom:10%;left:-15px;width:80px;height:120px;animation:sway 10s ease-in-out infinite;animation-delay:2s;transform:scaleX(-1)}
-@keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
+/* ——— Author Credit ——— */
+.author-section{
+  margin-top:2rem;text-align:center;
+}
+.author-divider{
+  width:60px;height:.5px;margin:0 auto .8rem;
+  background:linear-gradient(90deg,transparent,rgba(184,160,196,.3),transparent);
+}
+.author-name{
+  font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+  font-size:.85rem;color:rgba(184,160,196,.55);
+  letter-spacing:.08em;
+}
+.author-name .author-highlight{
+  color:rgba(201,169,110,.7);
+}
+.author-platform{
+  font-family:'Playfair Display',serif;
+  font-size:.6rem;color:rgba(184,160,196,.35);
+  letter-spacing:.2em;margin-top:.25rem;
+  font-style:italic;
+}
+
+/* ——— Bottom decorative line ——— */
+.bottom-line{
+  width:100%;max-width:280px;height:.5px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,.15),transparent);
+  margin-top:1.5rem;
+}
+
+/* ——— Custom scrollbar ——— */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,169,110,.15);border-radius:3px}
+
+/* ——— Mobile tweaks ——— */
+@media(max-width:380px){
+  .hero-title{font-size:1.4rem}
+  .code-input{width:150px}
+}
 </style>
 </head>
 <body>
+
+<!-- Ambient orbs -->
+<div class="ambient-orb orb-1"></div>
+<div class="ambient-orb orb-2"></div>
+<div class="ambient-orb orb-3"></div>
+
+<!-- Starfield Canvas -->
+<canvas class="stars-canvas" id="starCanvas"></canvas>
+
+<!-- Main App -->
 <div id="app">
-  <!-- Botanical decoration -->
-  <div class="deco-botanical deco-b1">
-    <svg viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M50 140C50 140 50 10 50 10" stroke="#6b5e52" stroke-width=".8"/>
-      <path d="M50 100C35 85 20 90 15 80" stroke="#6b5e52" stroke-width=".6" fill="none"/>
-      <path d="M50 80C65 65 75 70 80 55" stroke="#6b5e52" stroke-width=".6" fill="none"/>
-      <path d="M50 55C38 42 25 48 22 35" stroke="#6b5e52" stroke-width=".6" fill="none"/>
-      <path d="M50 35C60 25 68 28 72 18" stroke="#6b5e52" stroke-width=".6" fill="none"/>
-      <ellipse cx="50" cy="8" rx="4" ry="6" stroke="#6b5e52" stroke-width=".6" fill="none"/>
-    </svg>
-  </div>
-  <div class="deco-botanical deco-b2">
-    <svg viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M40 110C40 110 40 15 40 15" stroke="#6b5e52" stroke-width=".7"/>
-      <path d="M40 90C28 78 18 82 12 72" stroke="#6b5e52" stroke-width=".5" fill="none"/>
-      <path d="M40 65C52 55 60 58 65 45" stroke="#6b5e52" stroke-width=".5" fill="none"/>
-      <path d="M40 42C30 32 22 36 18 25" stroke="#6b5e52" stroke-width=".5" fill="none"/>
-      <circle cx="40" cy="12" r="5" stroke="#6b5e52" stroke-width=".5" fill="none"/>
-    </svg>
+
+  <!-- Hero Card -->
+  <div class="hero-card-wrap">
+    <div class="hero-card-glow"></div>
+    <div class="hero-card">☽</div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
   </div>
 
-  <!-- Landing -->
-  <div class="section landing active" id="sec-landing">
-    <div class="landing-tarot-icon">☽</div>
-    <p class="subtitle">THE HIDDEN ARCANA</p>
-    <h1>你的灵魂深处，<br>藏着哪种<em>隐秘人格</em>？</h1>
-    <p class="subtitle-cn">12道灵感之问 · 以塔罗之眼窥见你从未展示的自己</p>
-    <div class="divider"></div>
-    <button class="btn-start" onclick="startQuiz()">翻开命运之牌</button>
-    <div class="landing-footer">— tarot personality · 仅供灵感与娱乐 —</div>
-  </div>
+  <!-- Title -->
+  <p class="hero-eyebrow">The Hidden Arcana</p>
+  <h1 class="hero-title">你的灵魂深处<br>藏着哪种<em>隐秘人格</em>？</h1>
+  <p class="hero-sub">一张牌，看见你从未示人的底色</p>
 
-  <!-- Quiz -->
-  <div class="section quiz" id="sec-quiz">
-    <div class="quiz-header">
-      <div class="progress-row">
-        <span class="progress-label" id="prog-label">Card I of XII</span>
-        <span class="progress-label" id="prog-pct">0%</span>
+  <div class="divider"></div>
+
+  <!-- Three Features -->
+  <div class="features">
+    <div class="feat-card">
+      <div class="feat-icon">&#x2726;</div>
+      <div class="feat-body">
+        <div class="feat-label">FEATURE 01</div>
+        <div class="feat-title">12 道灵魂之问</div>
+        <div class="feat-desc">以塔罗之眼叩问内心，从灵感碎片中打捞沉睡的自我</div>
       </div>
-      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
     </div>
-    <div class="q-card" id="q-card">
-      <div class="q-number" id="q-num">I</div>
-      <div class="q-text" id="q-text"></div>
-      <div class="q-options" id="q-opts"></div>
-    </div>
-  </div>
 
-  <!-- Result -->
-  <div class="section result" id="sec-result">
-    <div class="result-card">
-      <div class="corner-ornament tl"></div>
-      <div class="corner-ornament tr"></div>
-      <div class="corner-ornament bl"></div>
-      <div class="corner-ornament br"></div>
-      <div class="result-arcana" id="r-arcana">THE HIDDEN ARCANA</div>
-      <div class="result-type" id="r-type"></div>
-      <div class="result-subtitle" id="r-subtitle"></div>
-      <div class="result-painting-wrap">
-        <img class="result-painting" id="r-painting" alt="painting" loading="eager">
-        <div class="result-painting-info">
-          <span class="painting-title" id="r-ptitle"></span>
-          <span class="painting-artist" id="r-partist"></span>
-        </div>
+    <div class="feat-card">
+      <div class="feat-icon">&#x269C;</div>
+      <div class="feat-body">
+        <div class="feat-label">FEATURE 02</div>
+        <div class="feat-title">6 幅世界名画</div>
+        <div class="feat-desc">每一幅经典，都是你灵魂底色的镜像——艺术从不撒谎</div>
       </div>
-      <div class="result-painting-reason" id="r-preason"></div>
-      <div class="result-divider"></div>
-      <div class="result-desc" id="r-desc"></div>
-      <div class="result-hidden">
-        <span class="result-hidden-label">Your Hidden Voice</span>
-        <div class="result-hidden-quote" id="r-quote"></div>
-      </div>
-      <div class="result-chars" id="r-chars">
-        <span class="result-chars-label">Soul Companions</span>
-      </div>
-      <div class="result-actions">
-        <button class="btn-share" onclick="shareResult()">分享给懂你的人</button>
-        <button class="btn-retry" onclick="retry()">重新翻牌</button>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">&#x273F;</div>
+      <div class="feat-body">
+        <div class="feat-label">FEATURE 03</div>
+        <div class="feat-title">专属塔罗解读</div>
+        <div class="feat-desc">揭晓隐藏在人格面具下的真相，还有灵魂同类的影视角色推荐</div>
       </div>
     </div>
   </div>
+
+  <!-- Verification Code -->
+  <div class="access-section">
+    <div class="access-label">Enter Invitation Code</div>
+    <div class="code-input-wrap">
+      <input
+        type="text"
+        class="code-input"
+        id="codeInput"
+        placeholder="输入邀请码"
+        maxlength="20"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+      >
+      <button class="btn-unlock" id="btnUnlock">&#x25B8; 进入测试</button>
+    </div>
+    <div class="code-hint" id="codeHint">关注小红书「薯精老师」获取邀请码</div>
+  </div>
+
+  <!-- Author Credit -->
+  <div class="author-section">
+    <div class="author-divider"></div>
+    <div class="author-name">小红书 <span class="author-highlight">薯精老师</span> 制作</div>
+    <div class="author-platform">Tarot Personality · Crafted with Soul</div>
+  </div>
+
+  <div class="bottom-line"></div>
 </div>
-<div class="watermark">Tarot Personality · for entertainment only</div>
+
 <script>
-const roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-const romanWord=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+// ============================
+// Starfield Canvas
+// ============================
+(function(){
+  const c=document.getElementById('starCanvas');
+  const ctx=c.getContext('2d');
+  let stars=[],w,h;
 
-const questions=[
-  {q:'如果你是一种画材，你觉得自己更像？',opts:['炭笔——看似粗犷，却能画出最细腻的层次','水彩——看似柔弱，晕染开来却无法控制','油画颜料——表面平静，底下藏着厚厚的笔触','铅笔——精确到每一根线条都有它的位置']},
-  {q:'朋友约你去一个全是陌生人的聚会，你的真实想法是？',opts:['去呗，我能和所有人聊起来，但回家后会很累','默默观察每一个人，比聊天更有趣','表面答应，内心已经在编取消的借口','会去，而且可能会做出让大家意外的事']},
-  {q:'你的手机相册里最多的照片类型是？',opts:['天空、云、日落——那些转瞬即逝的瞬间','精心构图的美食或静物','很少拍照，觉得记忆比照片更真实','各种截图——触动你的文字或画面']},
-  {q:'一个人安静下来的时候，你脑海里在想什么？',opts:['幻想一些不切实际但很美的场景','复盘今天的互动，分析每个细节','想那些不敢说出口的真实想法','突然感到一种说不清的脆弱感']},
-  {q:'你最希望别人评价你的作品时说什么？',opts:['你的作品里有一种克制的力量','看你的作品让我觉得不孤独','你竟然有这样的一面','每一个细节都很讲究']},
-  {q:'哪种颜色的组合最接近你内心的底色？',opts:['冰蓝与银灰——表面冷调，内有微光','深红与金色——被压抑的热烈','粉紫与暮色——柔软到容易碎','黑白之间的无数灰度——矛盾又精确']},
-  {q:'你对"规则"的真实态度是？',opts:['表面遵守，但内心一直在质疑','会自己制定一套更高标准的规则','希望打破它，但害怕打破后的后果','觉得规则保护了某些脆弱的东西']},
-  {q:'在一段关系里，你最怕的是？',opts:['被完全看透','热情被辜负','发现对方也不是真正理解你','自己的不完美被发现']},
-  {q:'深夜失眠时，你最可能在做什么？',opts:['在脑海里构建一个理想的平行世界','反复修改一个作品的某个细节','听一首很安静的歌，什么都不想','翻看很久没联系的人的社交动态']},
-  {q:'如果可以生活在一幅画里，你会选择？',opts:['一幅有故事冲突和戏剧张力的画','一幅温暖到让人想哭的画','一幅安静得听得见风声的画','一幅梦境般现实与超现实交织的画']},
-  {q:'你觉得自己最被低估的品质是？',opts:['我的叛逆和独立思考','我对爱和美的感受力','我内心世界的丰富程度','我对疼痛的敏感和共情']},
-  {q:'你最害怕的一种存在方式是？',opts:['一辈子都在扮演别人期待的角色','付出了全部热情却得不到回应','被所有人包围却没有人真正看见你','永远达不到自己内心的标准']}
-];
-
-// A→type, B→type, C→type, D→type
-const scoreMap=[
-  [2,6,1,4],[3,4,6,1],[5,4,3,2],[5,4,1,6],
-  [2,5,1,4],[3,2,6,4],[1,4,5,6],[1,2,3,6],
-  [5,4,6,3],[1,2,3,5],[1,2,5,6],[1,2,3,4]
-];
-
-const results={
-  1:{
-    type:'隐藏的叛逆灵魂',
-    sub:'"表面温顺随和，骨子里是一团野火"',
-    arcana:'THE REBEL · 逆位皇帝',
-    desc:'你看起来是人群中最好相处的那一个，从不与人起冲突，总是微笑着点头。但你内心深处住着一个反叛者——你质疑一切被理所当然接受的事物，你的温顺不是服从，而是你选择的伪装。你在等一个值得你掀翻桌子的时刻。',
-    quote:'我从未被驯服，我只是还没遇到值得我亮出爪牙的理由。',
-    painting:'images/liberty.jpg',
-    ptitle:'La Liberté guidant le peuple',ptitle_cn:'自由引导人民',
-    partist:'Eugène Delacroix · 1830',
-    preason:'德拉克洛瓦将革命的激情凝固在画布上——自由女神赤脚踏过硝烟，旗帜在混乱中猎猎作响。你表面的温和之下，也藏着同样不愿被束缚的灵魂。这幅画懂你：真正的叛逆不必声嘶力竭，它在沉默中蓄力，在关键时刻化为风暴。',
-    chars:[{name:'哪吒',from:'《哪吒之魔童降世》',why:'我命由我不由天——表面叛逆是假象，骨子里的反抗才是真'},{name:'薛宝钗',from:'《红楼梦》',why:'最守规矩的人，恰恰是看得最透的人，温顺只是她的选择'}]
-  },
-  2:{
-    type:'隐藏的炽热之心',
-    sub:'"理性是你的铠甲，深情才是你的本体"',
-    arcana:'THE LOVER · 正位恋人',
-    desc:'你习惯用冷静和理性包裹自己，分析一切、掌控一切。但没人知道，你内心深处对美、对爱、对一切触动灵魂的事物有着近乎疯狂的渴望。你不是不热烈，你只是把所有的炽热都埋在了冰面之下，怕一旦燃烧就无法收场。',
-    quote:'我不是不懂浪漫，我只是把每一次心动都小心翼翼地锁进了日记本。',
-    painting:'images/the-kiss.jpg',
-    ptitle:'The Kiss',ptitle_cn:'吻',
-    partist:'Gustav Klimt · 1907',
-    preason:'克里姆特用金箔与花纹编织出了人类最私密的时刻——两个人融化在一起，世界不复存在。你会被这幅画击中，因为它画出了你最不敢展示的那一面：那个渴望全然投入、不计后果去爱的自己。',
-    chars:[{name:'顾城',from:'诗人',why:'"黑夜给了我黑色的眼睛，我却用它寻找光明"——理性的外壳下，是一颗为美燃烧的心'},{name:'Mr. Darcy',from:'《傲慢与偏见》',why:'用骄傲掩饰深情，用沉默代替告白，直到爱意溢出所有伪装'}]
-  },
-  3:{
-    type:'隐藏的孤岛意识',
-    sub:'"社交是技能，孤独才是母语"',
-    arcana:'THE HERMIT · 正位隐者',
-    desc:'你是人群里最不像独行侠的独行侠。你善于倾听、擅长共情、能和任何人找到话题。但你心底始终有一座无人能登的岛屿。你不是不需要陪伴，你只是在等一个不用说话也能待在一起的人。',
-    quote:'我可以和全世界聊天，但我的频率，只为极少数人打开。',
-    painting:'images/nighthawks.jpg',
-    ptitle:'Nighthawks',ptitle_cn:'夜游者',
-    partist:'Edward Hopper · 1942',
-    preason:'霍珀画了一间深夜亮着灯的街角餐厅，几个人各怀心事地坐着，外面是空旷的城市。没有门——你注意到了吗？这家餐厅没有画出入口。这就是你的内心：明明在人群之中，却像隔着一层看不见的玻璃。',
-    chars:[{name:'千寻',from:'《千与千寻》',why:'在一个陌生的世界里微笑着生存，但最想做的只是回到那个最初的自己'},{name:'1900',from:'《海上钢琴师》',why:'船上有全世界的人，他却只愿与琴键对话——他不是不爱世界，是世界太大了'}]
-  },
-  4:{
-    type:'隐藏的完美主义',
-    sub:'"看似随性不羁，内心是精密的钟表"',
-    arcana:'THE MAGICIAN · 正位魔术师',
-    desc:'你给人的感觉是洒脱、随意、不拘小节。但没人知道你对自己有一套严苛到近乎残忍的标准。你的"随便"是无数次推翻重来后的"刚好"，你的"轻松"是反复排练后的"即兴"。你最大的痛苦，是永远觉得自己不够好。',
-    quote:'我不是追求完美，我只是无法忍受自己的作品里有一丝敷衍。',
-    painting:'images/pearl-earring.jpg',
-    ptitle:'Girl with a Pearl Earring',ptitle_cn:'戴珍珠耳环的少女',
-    partist:'Johannes Vermeer · 1665',
-    preason:'维米尔的光线精确到每一个像素都是计算。但你看到的不是技术，而是那种"刚好"的美——不多一分，不少一毫。少女回眸的瞬间，像是被时间精准地定格。你懂这种偏执：真正的随意，是把所有的刻意藏起来。',
-    chars:[{name:'梅长苏',from:'《琅琊榜》',why:'每一步棋都精确到毫厘，表面云淡风轻，背后是千万次推演'},{name:'贝多芬',from:'历史人物',why:'一个音符改几十遍，把完美主义写进了每一个乐章的骨骼里'}]
-  },
-  5:{
-    type:'隐藏的造梦者',
-    sub:'"脚踩大地，灵魂却住在云端"',
-    arcana:'THE STAR · 正位星辰',
-    desc:'你在别人眼里是务实的、靠谱的、脚踏实地的。但你内心有一个平行宇宙，那里的天空是旋转的，星星会说话，时间可以倒流。你的白日梦不是逃避，而是你真正的精神家园。你最怕的不是失败，而是有一天不再会做梦。',
-    quote:'我最清醒的时刻，恰恰是在做梦的时候。',
-    painting:'images/starry-night.jpg',
-    ptitle:'The Starry Night',ptitle_cn:'星月夜',
-    partist:'Vincent van Gogh · 1889',
-    preason:'梵高在精神病院的窗前画下了这片天空——星辰在旋转，夜空在流动，整个宇宙都在呼吸。所有人都说他疯了，但也许他只是看到了我们看不到的东西。你和梵高一样：你眼中的世界，比"现实"要美得多、深得多。',
-    chars:[{name:'小王子',from:'《小王子》',why:'"真正重要的东西，眼睛是看不见的"——你的内心住着同一种天真的智慧'},{name:'庄周',from:'《庄子》',why:'是蝴蝶梦见了庄周，还是庄周梦见了蝴蝶？你懂这种边界模糊的美妙'}]
-  },
-  6:{
-    type:'隐藏的玻璃心',
-    sub:'"外壳坚不可摧，内心薄如蝉翼"',
-    arcana:'THE MOON · 正位月亮',
-    desc:'你看起来很酷、很独立、什么都不在乎。但你的内心柔软到一句无心的话就能让你反复想一整夜。你不是不坚强，你只是把所有的脆弱都藏在了别人看不到的地方。你需要的不是铠甲，而是一个可以卸下铠甲的安全角落。',
-    quote:'不是我太敏感，是这个世界太粗糙了。',
-    painting:'images/ophelia.jpg',
-    ptitle:'Ophelia',ptitle_cn:'奥菲利亚',
-    partist:'John Everett Millais · 1851',
-    preason:'米莱斯画了莎士比亚笔下最脆弱的灵魂——奥菲利亚漂浮在溪流中，被鲜花环绕，表情安详得像在做梦。美得令人心碎。你会懂这种感觉：最美的东西往往最易碎，最平静的表面下藏着最深的暗涌。',
-    chars:[{name:'林黛玉',from:'《红楼梦》',why:'葬花时的眼泪不是矫情，是一颗太细腻的心对这个粗粝世界的本能反应'},{name:'松子',from:'《被嫌弃的松子的一生》',why:'用尽全力去爱这个世界，却一次次被世界的粗暴碾碎，碎了又重新拼起来'}]
+  function resize(){
+    w=c.width=window.innerWidth;
+    h=c.height=window.innerHeight;
   }
-};
+  resize();
+  window.addEventListener('resize',resize);
 
-let cur=0,answers=[];
-
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function renderQ(idx){
-  const qc=document.getElementById('q-card');
-  qc.className='q-card fade-out';
-  setTimeout(()=>{
-    document.getElementById('q-num').textContent=roman[idx];
-    document.getElementById('q-text').textContent=questions[idx].q;
-    const opts=document.getElementById('q-opts');
-    opts.innerHTML='';
-    questions[idx].opts.forEach((o,i)=>{
-      const d=document.createElement('div');
-      d.className='q-opt';
-      d.textContent=o;
-      d.onclick=()=>selectOpt(i,d);
-      opts.appendChild(d);
-    });
-    const pct=Math.round((idx/12)*100);
-    document.getElementById('prog-label').textContent=`Card ${roman[idx]} of XII`;
-    document.getElementById('prog-pct').textContent=pct+'%';
-    document.getElementById('prog-fill').style.width=pct+'%';
-    qc.className='q-card fade-in';
-  },280);
-}
-
-function selectOpt(i,el){
-  document.querySelectorAll('.q-opt').forEach(o=>{o.classList.remove('selected');o.style.pointerEvents='none'});
-  el.classList.add('selected');
-  answers[cur]=i;
-  setTimeout(()=>{
-    cur++;
-    if(cur>=12) showResult();
-    else renderQ(cur);
-  },450);
-}
-
-function showResult(){
-  const scores={1:0,2:0,3:0,4:0,5:0,6:0};
-  answers.forEach((a,qi)=>{scores[scoreMap[qi][a]]++});
-  let maxT=1,maxS=0;
-  for(let t=1;t<=6;t++){if(scores[t]>maxS){maxS=scores[t];maxT=t}}
-  const r=results[maxT];
-  document.getElementById('r-arcana').textContent=r.arcana;
-  document.getElementById('r-type').textContent=r.type;
-  document.getElementById('r-subtitle').textContent=r.sub;
-  document.getElementById('r-painting').src=r.painting;
-  document.getElementById('r-painting').alt=r.ptitle_cn;
-  document.getElementById('r-ptitle').textContent=r.ptitle;
-  document.getElementById('r-partist').textContent=r.partist;
-  document.getElementById('r-preason').textContent=r.preason;
-  document.getElementById('r-desc').textContent=r.desc;
-  document.getElementById('r-quote').textContent=r.quote;
-  // chars
-  const charsEl=document.getElementById('r-chars');
-  charsEl.innerHTML='<span class="result-chars-label">Soul Companions · 灵魂同类</span>';
-  r.chars.forEach(c=>{
-    const card=document.createElement('div');
-    card.className='char-card';
-    card.innerHTML=`<div class="char-avatar">${c.name[0]}</div><div class="char-info"><span class="char-name">${c.name}</span><span class="char-from">${c.from}</span><div class="char-why">${c.why}</div></div>`;
-    charsEl.appendChild(card);
-  });
-  document.getElementById('prog-fill').style.width='100%';
-  document.getElementById('prog-pct').textContent='100%';
-  showSection('sec-result');
-  document.getElementById('sec-result').scrollTop=0;
-}
-
-function startQuiz(){cur=0;answers=[];showSection('sec-quiz');renderQ(0)}
-function retry(){cur=0;answers=[];showSection('sec-landing')}
-
-function shareResult(){
-  const t=document.getElementById('r-type').textContent;
-  const s=document.getElementById('r-subtitle').textContent;
-  const q=document.getElementById('r-quote').textContent;
-  const p=document.getElementById('r-ptitle').textContent;
-  const text=`【塔罗人格牌】我的隐藏人格是「${t}」\n${s}\n\n我的灵魂名画是《${p}》\n\n"${q}"\n\n你也来测测你隐藏的灵魂底色`;
-  if(navigator.share){
-    navigator.share({title:'塔罗人格牌',text}).catch(()=>{});
-  }else if(navigator.clipboard){
-    navigator.clipboard.writeText(text).then(()=>{
-      const btn=document.querySelector('.btn-share');
-      const orig=btn.textContent;
-      btn.textContent='已复制到剪贴板 ✓';
-      setTimeout(()=>btn.textContent=orig,2000);
+  // Create stars
+  const count=Math.floor((w*h)/3000);
+  for(let i=0;i<count;i++){
+    stars.push({
+      x:Math.random()*w,
+      y:Math.random()*h,
+      r:Math.random()*1.2+.3,
+      alpha:Math.random()*.5+.2,
+      speed:Math.random()*.008+.002,
+      pulse:Math.random()*Math.PI*2
     });
   }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const t=Date.now()*.001;
+    stars.forEach(s=>{
+      const a=s.alpha+Math.sin(t*1.5+s.pulse)*.15;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(201,169,110,${Math.max(.05,a)})`;
+      ctx.fill();
+      // Occasional glow
+      if(a>.35){
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r*2.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(223,188,110,${(a-.35)*.3})`;
+        ctx.fill();
+      }
+      s.y-=s.speed;
+      if(s.y<-5){s.y=h+5;s.x=Math.random()*w}
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ============================
+// Verification System
+// ============================
+const VALID_CODES=[
+  'SOUL2026',
+  'TAROT26',
+  'MYSTIC',
+  'PRIESTESS',
+  'STARDUST'
+];
+
+const codeInput=document.getElementById('codeInput');
+const btnUnlock=document.getElementById('btnUnlock');
+const codeHint=document.getElementById('codeHint');
+
+// Check if already unlocked
+if(sessionStorage.getItem('tarot_unlocked')==='true'){
+  window.location.href='quiz.html';
 }
+
+function verifyCode(code){
+  return VALID_CODES.includes(code.toUpperCase().trim());
+}
+
+function unlock(){
+  const code=codeInput.value.toUpperCase().trim();
+  if(!code){
+    codeInput.classList.add('error');
+    codeHint.textContent='请输入邀请码';
+    codeHint.style.color='rgba(196,122,138,.6)';
+    setTimeout(()=>{
+      codeInput.classList.remove('error');
+      codeHint.textContent='关注小红书「薯精老师」获取邀请码';
+      codeHint.style.color='';
+    },1500);
+    return;
+  }
+  if(verifyCode(code)){
+    // Success!
+    sessionStorage.setItem('tarot_unlocked','true');
+    codeInput.classList.add('success');
+    codeHint.textContent='✦ 灵魂之门已开启 ✦';
+    codeHint.style.color='rgba(201,169,110,.7)';
+    btnUnlock.textContent='进入中...';
+    btnUnlock.style.pointerEvents='none';
+    btnUnlock.style.opacity='.7';
+    setTimeout(()=>{
+      window.location.href='quiz.html';
+    },800);
+  }else{
+    // Fail
+    codeInput.classList.add('error');
+    codeHint.textContent='邀请码无效，请重试';
+    codeHint.style.color='rgba(196,122,138,.6)';
+    codeInput.value='';
+    codeInput.focus();
+    setTimeout(()=>{
+      codeInput.classList.remove('error');
+      codeHint.textContent='关注小红书「薯精老师」获取邀请码';
+      codeHint.style.color='';
+    },2000);
+  }
+}
+
+btnUnlock.addEventListener('click',unlock);
+codeInput.addEventListener('keydown',e=>{
+  if(e.key==='Enter') unlock();
+});
+
+// Focus input on load
+setTimeout(()=>codeInput.focus(),1200);
 </script>
 </body>
 </html>
